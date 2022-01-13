@@ -9,7 +9,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import map.app.low_calories_google_map.Helper
+
 
 /** LocationPlugin */
 class LocationPlugin: FlutterPlugin, MethodCallHandler , ActivityAware {
