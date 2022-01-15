@@ -1,6 +1,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -104,6 +105,43 @@ class LocationPlugin {
     final bool? version = await _freeChannel.invokeMethod('checkGpsIos');
     return version;
   }
+
+
+  static double distanceBetween(
+      double startLatitude,
+      double startLongitude,
+      double endLatitude,
+      double endLongitude,
+      ) {
+    var earthRadius = 6378137.0;
+    var dLat = _toRadians(endLatitude - startLatitude);
+    var dLon = _toRadians(endLongitude - startLongitude);
+
+    var a = pow(sin(dLat / 2), 2) +
+        pow(sin(dLon / 2), 2) *
+            cos(_toRadians(startLatitude)) *
+            cos(_toRadians(endLatitude));
+    var c = 2 * asin(sqrt(a));
+
+    return earthRadius * c;
+  }
+
+  static _toRadians(double degree) {
+    return degree * pi / 180;
+  }
+
+  static nearestCoordinates(Location location,List<Location> list) {
+    List<double> filter = [];
+    for(Location element in list){
+       filter.add(distanceBetween(location.lat!,location.lng!,element.lat!,element.lng!));
+    }
+    return filter.reduce(min);
+  }
+
+
+
+  
+
 
 
 }
