@@ -130,17 +130,23 @@ class LocationPlugin {
     return degree * pi / 180;
   }
 
-  static nearestCoordinates(Location location,List<Location> list) {
-    List<double> filter = [];
-    for(Location element in list){
-       filter.add(distanceBetween(location.lat!,location.lng!,element.lat!,element.lng!));
-    }
-    return filter.reduce(min);
+
+
+
+  Location nearestCoordinates(Location from,List<Location> list) {
+    return list.reduce((value, element){
+      return LocationPlugin.distanceBetween(from.lat!,from.lng!,value.lat!,value.lng!) < LocationPlugin.distanceBetween(from.lat!,from.lng!,element.lat!,element.lng!) ? value : element;
+    });
   }
 
 
 
-  
+  Location farthestCoordinates(Location from,List<Location> list) {
+    return list.reduce((value, element){
+      return LocationPlugin.distanceBetween(from.lat!,from.lng!,value.lat!,value.lng!) > LocationPlugin.distanceBetween(from.lat!,from.lng!,element.lat!,element.lng!) ? value : element;
+    });
+  }
+
 
 
 
