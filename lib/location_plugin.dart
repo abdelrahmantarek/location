@@ -12,10 +12,10 @@ class LocationPlugin {
 
   static const MethodChannel _freeChannel = MethodChannel('location_plugin');
 
-  static String gpsTitle;
-  static String gpsSubtitle;
-  static String cancelText;
-  static String settingsText;
+  static late String gpsTitle;
+  static late String gpsSubtitle;
+  static late String cancelText;
+  static late String settingsText;
 
   static init({
     required String gpsTitle,
