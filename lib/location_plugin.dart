@@ -17,7 +17,7 @@ class LocationPlugin {
   static String cancelText;
   static String settingsText;
 
-  init({
+  static init({
     required String gpsTitle,
     required String gpsSubtitle,
     required String cancelText,
