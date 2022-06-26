@@ -9,8 +9,25 @@ import 'package:location_plugin/Locaiton.dart';
 import 'package:location_plugin/ui/PopAskopenGpsIos.dart';
 
 class LocationPlugin {
+
   static const MethodChannel _freeChannel = MethodChannel('location_plugin');
 
+  static String gpsTitle;
+  static String gpsSubtitle;
+  static String cancelText;
+  static String settingsText;
+
+  init({
+    required String gpsTitle,
+    required String gpsSubtitle,
+    required String cancelText,
+    required String settingsText,
+  }){
+    LocationPlugin.gpsTitle = gpsTitle;
+    LocationPlugin.gpsSubtitle = gpsSubtitle;
+    LocationPlugin.cancelText = cancelText;
+    LocationPlugin.settingsText = settingsText;
+  }
 
   static Future<Location?> getLocation(BuildContext? context)async{
 
@@ -46,7 +63,11 @@ class LocationPlugin {
       if(gps! == false){
         bool? result = await showDialog<bool>(context: context!,barrierDismissible: false, builder: (context){
           return PopAskOpenGpsIos(
-            onGoSettings: ()async{
+            cancelText: cancelText,
+            settingsText: settingsText,
+            gpsSubtitle: gpsSubtitle,
+            gpsTitle: gpsTitle,
+            onGoSettings: () async {
               bool data = await _freeChannel.invokeMethod('requestOpenGpsIos');
               // print("gps Request status =========  " + data.toString());
               Navigator.pop(context,data);
