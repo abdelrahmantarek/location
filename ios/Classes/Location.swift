@@ -80,6 +80,14 @@ class Location : NSObject, CLLocationManagerDelegate{
         self.locationManager.startUpdatingLocation()
     }
 
+     func openSettingsLocationPermissionIos(){
+        //Redirect to Settings app
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(URL(string:UIApplication.openSettingsURLString)!)
+        } else {
+            UIApplication.shared.openURL(URL(string:UIApplication.openSettingsURLString)!)
+        }
+   }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let userLocation :CLLocation = locations[0] as CLLocation
