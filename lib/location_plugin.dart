@@ -150,6 +150,29 @@ static Future<bool?> get allServiceStatus async {
     return version;
   }
 
+  
+  static Future<bool> openSettingsIos() async {
+
+    bool? result = await showDialog<bool>(context: context!,barrierDismissible: false, builder: (context){
+      return PopAskOpenGpsIos(
+        cancelText: cancelText,
+        settingsText: settingsText,
+        gpsSubtitle: gpsSubtitle,
+        gpsTitle: gpsTitle,
+        onGoSettings: () async {
+          final bool? settings = await _freeChannel.invokeMethod('openSettingsIos');
+          // print("gps Request status =========  " + data.toString());
+          Navigator.pop(context,settings ?? false);
+        },
+        onCancel: (){
+          Navigator.pop(context,false);
+        },
+      );
+    });
+    
+    return result ?? false;
+  }
+
 
   static double distanceBetween(
       double startLatitude,
