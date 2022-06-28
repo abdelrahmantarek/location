@@ -28,6 +28,11 @@ public class SwiftLocationPlugin: NSObject, FlutterPlugin {
       case "requestOpenGpsIos":
         location.requestOpenGps(result)
         break;
+      case "openSettingsIos":
+        location.openSettingsLocationPermissionIos()
+        result(true)
+        break;
+          
         default:
             print("default ")
       }
