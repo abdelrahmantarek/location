@@ -103,6 +103,25 @@ class LocationPlugin {
     return Location.fromList(data);
   }
 
+  static Future<bool?> get allServiceStatus async {
+    if(Platform.isAndroid){
+      if(!await locationStatusAndroid){
+         return false;
+      }
+      if(!await gpsStatusAndroid){
+        return false;
+      }
+    }
+    if(Platform.isIOS){
+      if(!await locationStatusIos){
+        return false;
+      }
+      if(!await gpsStatusIos){
+        return false;
+      }
+    }
+    return true;
+  }
 
 
   static Future<bool?> get locationStatusAndroid async {
