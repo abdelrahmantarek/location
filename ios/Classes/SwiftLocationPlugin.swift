@@ -37,3 +37,4 @@ public class SwiftLocationPlugin: NSObject, FlutterPlugin {
       }
   }
 }
+
