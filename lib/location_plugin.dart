@@ -151,8 +151,12 @@ static Future<bool?> get allServiceStatus async {
   }
 
   
-  static Future<bool> openSettingsIos(BuildContext? context) async {
-
+  static Future<bool> openSettingsIos(BuildContext? context,{
+    required String gpsTitle,
+    required String gpsSubtitle,
+    required String cancelText,
+    required String settingsText,
+}) async {
     bool? result = await showDialog<bool>(context: context!,barrierDismissible: false, builder: (context){
       return PopAskOpenGpsIos(
         cancelText: cancelText,
@@ -172,6 +176,8 @@ static Future<bool?> get allServiceStatus async {
     
     return result ?? false;
   }
+
+
 
 
 
