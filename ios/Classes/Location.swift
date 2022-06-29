@@ -50,6 +50,16 @@ class Location : NSObject, CLLocationManagerDelegate{
         }
     }
     
+    func locationStatus() ->Bool{
+        switch CLLocationManager.authorizationStatus() {
+            case .notDetermined, .restricted, .denied:
+                return false
+            case .authorizedAlways, .authorizedWhenInUse:
+                return true
+            @unknown default:
+                return false
+        }
+    }
     
     // request ----------
     func requestOpenGps(_ result:FlutterResult?){
@@ -80,14 +90,15 @@ class Location : NSObject, CLLocationManagerDelegate{
         self.locationManager.startUpdatingLocation()
     }
 
-     func openSettingsLocationPermissionIos(){
+     func openSettingsLocationPermissionIos(_ result:FlutterResult?){
+         self.resultAskPermisionLocation = result
         //Redirect to Settings app
         if #available(iOS 10.0, *) {
             UIApplication.shared.open(URL(string:UIApplication.openSettingsURLString)!)
         } else {
             UIApplication.shared.openURL(URL(string:UIApplication.openSettingsURLString)!)
         }
-   }
+    }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let userLocation :CLLocation = locations[0] as CLLocation
@@ -104,36 +115,13 @@ class Location : NSObject, CLLocationManagerDelegate{
     // listener ---------- status
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         print(status.rawValue)
-        switch CLLocationManager.authorizationStatus() {
-            case .notDetermined, .restricted, .denied:
-                if(self.resultAskPermisionLocation != nil){
-                    self.resultAskPermisionLocation(false)
-                    self.resultAskPermisionLocation = nil
-                }
-                if(self.resultAskGps != nil){
-                    self.resultAskGps(CLLocationManager.locationServicesEnabled())
-                    self.resultAskGps = nil
-                }
-            case .authorizedAlways, .authorizedWhenInUse:
-                if(self.resultAskPermisionLocation != nil){
-                    self.resultAskPermisionLocation(true)
-                    self.resultAskPermisionLocation = nil
-                }
-                if(self.resultAskGps != nil){
-                    self.resultAskGps(CLLocationManager.locationServicesEnabled())
-                    self.resultAskGps = nil
-                }
-                
-            @unknown default:
-                if(self.resultAskPermisionLocation != nil){
-                    self.resultAskPermisionLocation(false)
-                    self.resultAskPermisionLocation = nil
-                }
-                if(self.resultAskGps != nil){
-                    self.resultAskGps(CLLocationManager.locationServicesEnabled())
-                    self.resultAskGps = nil
-                }
-            break
+        if(self.resultAskPermisionLocation != nil){
+            self.resultAskPermisionLocation(self.locationStatus())
+            self.resultAskPermisionLocation = nil
+        }
+        if(self.resultAskGps != nil){
+            self.resultAskGps(CLLocationManager.locationServicesEnabled())
+            self.resultAskGps = nil
         }
     }
 
@@ -143,6 +131,10 @@ class Location : NSObject, CLLocationManagerDelegate{
     }
     
 }
+
+
+
+
 
 
 
