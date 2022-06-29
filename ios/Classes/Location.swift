@@ -74,8 +74,7 @@ class Location : NSObject, CLLocationManagerDelegate{
     }
     
     // request ----------
-    func requestLocationPermission(_ result:FlutterResult?){
-        self.resultAskPermisionLocation = result
+    func requestLocationPermission(){
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager.requestAlwaysAuthorization()
         locationManager.requestWhenInUseAuthorization()
