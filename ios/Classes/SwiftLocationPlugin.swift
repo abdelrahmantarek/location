@@ -20,8 +20,7 @@ public class SwiftLocationPlugin: NSObject, FlutterPlugin {
         location.getLocationStatusPermission(result)
         break;
       case "requestLocationPermissionIos":
-           location.requestLocationPermission()
-          result(true)
+        location.requestLocationPermission(result)
         break;
       case "checkGpsIos":
         location.getLocationStatus(result)
