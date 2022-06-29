@@ -12,24 +12,13 @@ class LocationPlugin {
 
   static const MethodChannel _freeChannel = MethodChannel('location_plugin');
 
-  static late String gpsTitle;
-  static late String gpsSubtitle;
-  static late String cancelText;
-  static late String settingsText;
 
-  static init({
+  static Future<Location?> getLocation(BuildContext? context,{
     required String gpsTitle,
     required String gpsSubtitle,
     required String cancelText,
     required String settingsText,
-  }){
-    LocationPlugin.gpsTitle = gpsTitle;
-    LocationPlugin.gpsSubtitle = gpsSubtitle;
-    LocationPlugin.cancelText = cancelText;
-    LocationPlugin.settingsText = settingsText;
-  }
-
-  static Future<Location?> getLocation(BuildContext? context)async{
+  })async{
 
     if(Platform.isAndroid){
 
@@ -240,4 +229,3 @@ static Future<bool?> get allServiceStatus async {
 
 
 }
-
