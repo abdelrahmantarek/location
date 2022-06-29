@@ -72,43 +72,56 @@ class LocationPlugin {
         }
       }
 
+      IosLocationStatus? locationIos;
 
+      locationIos = await locationStatusIos;
 
-      bool? location = await locationStatusIos;
-      print("permission status =========  " + location.toString());
-      if(location! == false){
+      print(locationIos);
 
-        bool? data = await showDialog<bool>(context: context!,barrierDismissible: false, builder: (context){
+      if(locationIos == IosLocationStatus.notDetermined || locationIos == IosLocationStatus.restricted){
+
+        locationIos = await requestLocationPermissionIos;
+
+      }
+
+      if(locationIos == IosLocationStatus.denied){
+
+        locationIos = await showDialog<IosLocationStatus>(context: context!,barrierDismissible: false, builder: (context){
           return PopAskOpenGpsIos(
             cancelText: cancelText,
             settingsText: settingsText,
             gpsSubtitle: gpsSubtitle,
             gpsTitle: gpsTitle,
             onGoSettings: () async {
-              final bool? settings = await _freeChannel.invokeMethod('openSettingsIos');
+
+              IosLocationStatus settingsResult = await openSettingsIos;
               // print("gps Request status =========  " + data.toString());
-              Navigator.pop(context,settings ?? false);
+              Navigator.pop(context,settingsResult);
             },
             onCancel: (){
-              Navigator.pop(context,false);
+              Navigator.pop(context,null);
             },
           );
         });
 
-        // bool data = await _freeChannel.invokeMethod('requestLocationPermissionIos');
-        // // print("permission Request result =========  " + data.toString());
-        if(data == false){
+        print(locationIos);
+
+        if(locationIos == null){
           return null;
         }
+
+        if(locationIos == IosLocationStatus.notDetermined || locationIos == IosLocationStatus.restricted || locationIos == IosLocationStatus.denied){
+          return null;
+        }
+
       }
-
-
 
     }
 
     final dynamic data = await _freeChannel.invokeMethod('getLocation');
     return Location.fromList(data);
   }
+
 
 static Future<bool?> get allServiceStatus async {
     if(Platform.isAndroid){
@@ -122,7 +135,8 @@ static Future<bool?> get allServiceStatus async {
       }
     }
     if(Platform.isIOS){
-      bool? location = await LocationPlugin.locationStatusIos;
+      IosLocationStatus locationIos = await locationStatusIos;
+      bool location = (locationIos == IosLocationStatus.authorizedAlways || locationIos == IosLocationStatus.authorizedWhenInUse);
       bool? gps = await LocationPlugin.gpsStatusIos;
       if(!(location ?? false)){
         return false;
@@ -135,16 +149,65 @@ static Future<bool?> get allServiceStatus async {
   }
 
 
+
   static Future<bool?> get locationStatusAndroid async {
     final bool? version = await _freeChannel.invokeMethod('locationStatusAndroid');
     return version;
   }
 
+  static Future<IosLocationStatus> get locationStatusIos async {
+    final String? state = await _freeChannel.invokeMethod('locationStatusIos');
 
-  static Future<bool?> get locationStatusIos async {
-    final bool? version = await _freeChannel.invokeMethod('locationStatusIos');
-    return version;
+    switch (state!){
+      case "notDetermined":
+        return IosLocationStatus.notDetermined;
+      case "restricted":
+        return IosLocationStatus.restricted;
+      case "denied":
+        return IosLocationStatus.denied;
+      case "authorizedWhenInUse":
+        return IosLocationStatus.authorizedWhenInUse;
+      case "authorizedAlways":
+        return IosLocationStatus.authorizedAlways;
+    }
+    return IosLocationStatus.denied;
   }
+
+  static Future<IosLocationStatus> get requestLocationPermissionIos async {
+    final String? state = await _freeChannel.invokeMethod('requestLocationPermissionIos');
+    switch (state!){
+      case "notDetermined":
+        return IosLocationStatus.notDetermined;
+      case "restricted":
+        return IosLocationStatus.restricted;
+      case "denied":
+        return IosLocationStatus.denied;
+      case "authorizedWhenInUse":
+        return IosLocationStatus.authorizedWhenInUse;
+      case "authorizedAlways":
+        return IosLocationStatus.authorizedAlways;
+    }
+    return IosLocationStatus.denied;
+  }
+
+  static Future<IosLocationStatus> get openSettingsIos async {
+    final String? state = await _freeChannel.invokeMethod('openSettingsIos');
+    switch (state!){
+      case "notDetermined":
+        return IosLocationStatus.notDetermined;
+      case "restricted":
+        return IosLocationStatus.restricted;
+      case "denied":
+        return IosLocationStatus.denied;
+      case "authorizedWhenInUse":
+        return IosLocationStatus.authorizedWhenInUse;
+      case "authorizedAlways":
+        return IosLocationStatus.authorizedAlways;
+    }
+    return IosLocationStatus.denied;
+  }
+
+
 
   static Future<bool?> get gpsStatusAndroid async {
     final bool? version = await _freeChannel.invokeMethod('gpsStatusAndroid');
@@ -157,31 +220,6 @@ static Future<bool?> get allServiceStatus async {
     return version;
   }
 
-  
-  static Future<bool> openSettingsIos(BuildContext? context,{
-    required String gpsTitle,
-    required String gpsSubtitle,
-    required String cancelText,
-    required String settingsText,
-}) async {
-    bool? result = await showDialog<bool>(context: context!,barrierDismissible: false, builder: (context){
-      return PopAskOpenGpsIos(
-        cancelText: cancelText,
-        settingsText: settingsText,
-        gpsSubtitle: gpsSubtitle,
-        gpsTitle: gpsTitle,
-        onGoSettings: () async {
-          final bool? settings = await _freeChannel.invokeMethod('openSettingsIos');
-          // print("gps Request status =========  " + data.toString());
-          Navigator.pop(context,settings ?? false);
-        },
-        onCancel: (){
-          Navigator.pop(context,false);
-        },
-      );
-    });
-    return result ?? false;
-  }
 
 
 
@@ -225,7 +263,14 @@ static Future<bool?> get allServiceStatus async {
     });
   }
 
-
-
-
 }
+
+
+enum IosLocationStatus{
+  notDetermined,
+  restricted,
+  denied,
+  authorizedWhenInUse,
+  authorizedAlways,
+}
+
