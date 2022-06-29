@@ -88,8 +88,26 @@ class LocationPlugin {
       bool? location = await locationStatusIos;
       print("permission status =========  " + location.toString());
       if(location! == false){
-        bool data = await _freeChannel.invokeMethod('requestLocationPermissionIos');
-        // print("permission Request result =========  " + data.toString());
+
+        bool? data = await showDialog<bool>(context: context!,barrierDismissible: false, builder: (context){
+          return PopAskOpenGpsIos(
+            cancelText: cancelText,
+            settingsText: settingsText,
+            gpsSubtitle: gpsSubtitle,
+            gpsTitle: gpsTitle,
+            onGoSettings: () async {
+              final bool? settings = await _freeChannel.invokeMethod('openSettingsIos');
+              // print("gps Request status =========  " + data.toString());
+              Navigator.pop(context,settings ?? false);
+            },
+            onCancel: (){
+              Navigator.pop(context,false);
+            },
+          );
+        });
+
+        // bool data = await _freeChannel.invokeMethod('requestLocationPermissionIos');
+        // // print("permission Request result =========  " + data.toString());
         if(data == false){
           return null;
         }
@@ -173,11 +191,8 @@ static Future<bool?> get allServiceStatus async {
         },
       );
     });
-    
     return result ?? false;
   }
-
-
 
 
 
@@ -225,3 +240,4 @@ static Future<bool?> get allServiceStatus async {
 
 
 }
+
