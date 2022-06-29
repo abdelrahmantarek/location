@@ -44,11 +44,6 @@ class Location : NSObject, CLLocationManagerDelegate{
     }
     
     func locationStatus() ->Bool{
-        
-        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        locationManager.requestAlwaysAuthorization()
-        locationManager.requestWhenInUseAuthorization()
-        
         switch CLLocationManager.authorizationStatus() {
             case .notDetermined, .restricted, .denied:
                 return false
@@ -74,7 +69,8 @@ class Location : NSObject, CLLocationManagerDelegate{
     }
     
     // request ----------
-    func requestLocationPermission(){
+   func requestLocationPermission(_ result:FlutterResult?){
+        self.resultAskPermisionLocation = result
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager.requestAlwaysAuthorization()
         locationManager.requestWhenInUseAuthorization()
