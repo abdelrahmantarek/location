@@ -40,18 +40,37 @@ class Location : NSObject, CLLocationManagerDelegate{
     
     // ask ---------- status
     func getLocationStatusPermission(_ result:FlutterResult){
-        result(locationStatus())
+        switch CLLocationManager.authorizationStatus() {
+           case .notDetermined:
+            result("notDetermined")
+           case .restricted:
+            result("restricted")
+           case .denied:
+            result("denied")
+           case .authorizedWhenInUse:
+            result("authorizedWhenInUse")
+           case .authorizedAlways:
+            result("authorizedAlways")
+           @unknown default:
+            result("denied")
+         }
     }
     
-    func locationStatus() ->Bool{
+    func locationStatus() ->String{
         switch CLLocationManager.authorizationStatus() {
-            case .notDetermined, .restricted, .denied:
-                return false
-            case .authorizedAlways, .authorizedWhenInUse:
-                return true
-            @unknown default:
-                return false
-        }
+           case .notDetermined:
+            return "notDetermined"
+           case .restricted:
+            return "restricted"
+           case .denied:
+            return "denied"
+           case .authorizedWhenInUse:
+            return "authorizedWhenInUse"
+           case .authorizedAlways:
+            return "authorizedAlways"
+           @unknown default:
+            return "denied"
+         }
     }
     
     // request ----------
@@ -69,7 +88,7 @@ class Location : NSObject, CLLocationManagerDelegate{
     }
     
     // request ----------
-   func requestLocationPermission(_ result:FlutterResult?){
+    func requestLocationPermission(_ result:FlutterResult?){
         self.resultAskPermisionLocation = result
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager.requestAlwaysAuthorization()
