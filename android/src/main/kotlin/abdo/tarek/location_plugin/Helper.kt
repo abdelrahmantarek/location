@@ -32,7 +32,7 @@ class Helper(private var activity: Activity,private var activityBinding: Activit
     private var fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity)
     private lateinit var gpsResult: MethodChannel.Result
     private lateinit var locationResult: MethodChannel.Result
-    private lateinit var getLocationResult: MethodChannel.Result
+    private var getLocationResult: MethodChannel.Result? = null
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
     private var LOCATION_REQUEST_CODE : Int = 150
@@ -92,9 +92,11 @@ class Helper(private var activity: Activity,private var activityBinding: Activit
                         list.add(latitude)
                         list.add(longitude)
                         cancellationTokenSource.cancel()
-                        getLocationResult.success(list)
+                        getLocationResult?.success(list)
+                        getLocationResult = null
                     }else{
                         result.success(null)
+                        getLocationResult = null
                     }
                 }
             }else{
@@ -103,11 +105,14 @@ class Helper(private var activity: Activity,private var activityBinding: Activit
                 val list: ArrayList<Double> = ArrayList()
                 list.add(latitude)
                 list.add(longitude)
-                getLocationResult.success(list)
+                if(getLocationResult != null){
+                    getLocationResult?.success(list)
+                    getLocationResult = null
+                }
             }
         }
             .addOnFailureListener {
-                getLocationResult.success(null)
+                getLocationResult?.success(null)
                 Toast.makeText(activity, "Failed on getting current location", Toast.LENGTH_SHORT).show()
             }
     }
