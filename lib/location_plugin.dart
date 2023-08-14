@@ -123,6 +123,7 @@ class LocationPlugin {
   }
 
 
+
 static Future<bool?> get allServiceStatus async {
     if(Platform.isAndroid){
       bool? location = await LocationPlugin.locationStatusAndroid;
@@ -251,7 +252,7 @@ static Future<bool?> get allServiceStatus async {
 
   Location nearestCoordinates(Location from,List<Location> list) {
     return list.reduce((value, element){
-      return LocationPlugin.distanceBetween(from.lat!,from.lng!,value.lat!,value.lng!) < LocationPlugin.distanceBetween(from.lat!,from.lng!,element.lat!,element.lng!) ? value : element;
+      return LocationPlugin.distanceBetween(from.latitude,from.longitude,value.latitude,value.longitude) < LocationPlugin.distanceBetween(from.latitude,from.longitude,element.latitude,element.longitude) ? value : element;
     });
   }
 
@@ -259,8 +260,28 @@ static Future<bool?> get allServiceStatus async {
 
   Location farthestCoordinates(Location from,List<Location> list) {
     return list.reduce((value, element){
-      return LocationPlugin.distanceBetween(from.lat!,from.lng!,value.lat!,value.lng!) > LocationPlugin.distanceBetween(from.lat!,from.lng!,element.lat!,element.lng!) ? value : element;
+      return LocationPlugin.distanceBetween(from.latitude,from.longitude,value.latitude,value.longitude) > LocationPlugin.distanceBetween(from.latitude,from.longitude,element.latitude,element.longitude) ? value : element;
     });
+  }
+
+  static bool isPointInShape(Location point, List<Location> shapePoints) {
+    bool isInside = false;
+    int j = shapePoints.length - 1;
+
+    for (int i = 0; i < shapePoints.length; i++) {
+      Location vertex1 = shapePoints[i];
+      Location vertex2 = shapePoints[j];
+
+      if ((vertex1.longitude < point.longitude && vertex2.longitude >= point.longitude) ||
+          (vertex2.longitude < point.longitude && vertex1.longitude >= point.longitude)) {
+        if (vertex1.latitude + (point.longitude - vertex1.longitude) / (vertex2.longitude - vertex1.longitude) * (vertex2.latitude - vertex1.latitude) < point.latitude) {
+          isInside = !isInside;
+        }
+      }
+      j = i;
+    }
+
+    return isInside;
   }
 
 }
